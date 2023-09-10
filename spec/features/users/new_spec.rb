@@ -15,6 +15,13 @@ RSpec.describe 'User Registration Page', type: :feature do
       end
     end
 
+    it 'has password and password confirmation fields' do
+      within('#registration-form') do
+        expect(page).to have_field('Password')
+        expect(page).to have_field('Confirm Password')
+      end
+    end
+
     it 'has a registration button' do
       within('#registration-form') do
         expect(page).to have_button('Create New User')
@@ -27,11 +34,13 @@ RSpec.describe 'User Registration Page', type: :feature do
       within('#registration-form') do
         fill_in('Name', with: 'Ethan')
         fill_in('Email', with: 'ethan@turing.edu')
+        fill_in('Password', with: 'test123')
+        fill_in('Confirm Password', with: 'test123')
         click_button('Create New User')
       end
-
+      
       user = User.last
-
+      
       # Flash message
       expect(page).to have_content('User successfully created')
       expect(current_path).to eq(user_path(user.id))
@@ -39,18 +48,20 @@ RSpec.describe 'User Registration Page', type: :feature do
   end
 
   describe 'sad path' do
-    it 'returns an error if name and/or email are missing' do
-      # Name and email are left blank
+    it 'returns an error if something is missing' do
+      # Name, email, and passwords are left blank
       within('#registration-form') do
         click_button('Create New User')
       end
 
-      expect(page).to have_content("Error: Name can't be blank, Email can't be blank")
+      expect(page).to have_content("Error: Name can't be blank, Email can't be blank, Email '' is not a valid email, Password can't be blank, Password confirmation doesn't match Password, Password confirmation can't be blank")
       expect(current_path).to eq(register_path)
 
       # Name is left blank
       within('#registration-form') do
         fill_in('Email', with: 'ethan@turing.edu')
+        fill_in('Password', with: 'test123')
+        fill_in('Confirm Password', with: 'test123')
         click_button('Create New User')
       end
 
@@ -60,10 +71,33 @@ RSpec.describe 'User Registration Page', type: :feature do
       # Email is left blank
       within('#registration-form') do
         fill_in('Name', with: 'Ethan')
+        fill_in('Password', with: 'test123')
+        fill_in('Confirm Password', with: 'test123')
         click_button('Create New User')
       end
 
       expect(page).to have_content("Error: Email can't be blank")
+      expect(current_path).to eq(register_path)
+
+      # Passwords are left blank
+      within('#registration-form') do
+        fill_in('Name', with: 'Ethan')
+        fill_in('Email', with: 'ethan@turing.edu')
+        click_button('Create New User')
+      end
+
+      expect(page).to have_content("Error: Password can't be blank")
+      expect(current_path).to eq(register_path)
+
+      # Passwords are different
+      within('#registration-form') do
+        fill_in('Name', with: 'Ethan')
+        fill_in('Email', with: 'ethan@turing.edu')
+        fill_in('Password', with: 'somepassword')
+        fill_in('Confirm Password', with: 'notthepassword')
+      end
+
+      expect(page).to have_content("Password confirmation doesn't match Password")
       expect(current_path).to eq(register_path)
     end
 
@@ -73,6 +107,8 @@ RSpec.describe 'User Registration Page', type: :feature do
       within('#registration-form') do
         fill_in('Name', with: 'Ethan')
         fill_in('Email', with: not_email)
+        fill_in('Password', with: 'test123')
+        fill_in('Confirm Password', with: 'test123')
         click_button('Create New User')
       end
 
@@ -81,11 +117,13 @@ RSpec.describe 'User Registration Page', type: :feature do
     end
 
     it 'returns an error if an email is not unique' do
-      User.create(name: 'Original Ethan', email: 'ethan@turing.edu')
+      User.create(name: 'Original Ethan', email: 'ethan@turing.edu', password: 'test123', password_confirmation: 'test123')  
 
       within('#registration-form') do
         fill_in('Name', with: 'Clone Ethan')
         fill_in('Email', with: 'ethan@turing.edu')
+        fill_in('Password', with: 'test123')
+        fill_in('Confirm Password', with: 'test123')
         click_button('Create New User')
       end
 

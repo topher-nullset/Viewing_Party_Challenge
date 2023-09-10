@@ -5,9 +5,9 @@ require 'rails_helper'
 describe 'New Viewing Party Page' do
   before do
     VCR.use_cassette('godfather-movie-details') do
-      @user1 = User.create(name: 'Ethan', email: 'ethan@ethan.com')
-      @user2 = User.create(name: 'Chris', email: 'chris@chris.com')
-      @user3 = User.create(name: 'Vito', email: 'vito@corleone.com')
+      @user1 = User.create(name: 'Ethan', email: 'ethan@ethan.com', password: '<PASSWORD>', password_confirmation: '<PASSWORD>')
+      @user2 = User.create(name: 'Chris', email: 'chris@chris.com', password: '<PASSWORD>', password_confirmation: '<PASSWORD>')
+      @user3 = User.create(name: 'Vito', email: 'vito@corleone.com', password: '<PASSWORD>', password_confirmation: '<PASSWORD>')
 
       @movie = MoviesFacade.new(238, nil).movie_details
 
