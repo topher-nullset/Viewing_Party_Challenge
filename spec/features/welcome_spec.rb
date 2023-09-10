@@ -25,17 +25,25 @@ RSpec.describe 'Welcome Page' do
     expect(current_path).to eq(register_path)
   end
 
-  it 'lists all existing users' do
+  it 'lists all existing users only if logged in' do
+    expect(page).to have_content('Hello!')
+
+    User.create(name: 'Original Ethan', email: 'ethan@turing.edu', password: 'test123',
+                password_confirmation: 'test123')
+    click_button('Log In')
+
+    fill_in 'Email', with: 'ethan@turing.edu'
+    fill_in 'Password', with: 'test123'
+    click_button('Log In')
+    click_link('Home')
+
     within('#user-list') do
       expect(page).to have_content('Existing Users')
       expect(page).to have_content(@user1.email)
       expect(page).to have_content(@user2.email)
       expect(page).to have_content(@user3.email)
-      within("#user-#{@user1.id}") do
-        click_link @user1.email.to_s
-      end
+      expect(page).to have_content('ethan@turing.edu')
     end
-    expect(current_path).to eq(user_path(@user1))
   end
 
   it 'has a link to the root page' do

@@ -3,9 +3,12 @@
 require 'rails_helper'
 
 describe 'Movie Details Page', type: :feature do
+  include AuthenticationHelper
+
   before do
     VCR.use_cassette('godfather-movie-details') do
       @user = create(:user)
+      login_user(@user)
       @movie = MoviesFacade.new(238, nil).movie_details
       visit user_movie_path(@user, 238)
     end

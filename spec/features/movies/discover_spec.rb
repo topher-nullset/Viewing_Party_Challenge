@@ -3,8 +3,11 @@
 require 'rails_helper'
 
 describe 'Discover Movies Page' do
+  include AuthenticationHelper
+
   before do
     @user = create(:user)
+    login_user(@user)
     visit user_discover_path(@user)
   end
 

@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'User login', type: :feature do
   describe 'login page' do
     before do
-      @user = User.create(name: 'Original Ethan', email: 'ethan@turing.edu', password: 'test123', password_confirmation: 'test123')
+      @user = User.create(name: 'Original Ethan', email: 'ethan@turing.edu', password: 'test123',
+                          password_confirmation: 'test123')
     end
 
     it 'can log in an existing user' do
@@ -23,7 +26,7 @@ RSpec.describe 'User login', type: :feature do
 
       click_button 'Log In'
       expect(current_path).to eq(user_path(@user.id))
-      expect(page).to have_content("Welcome back Original Ethan")
+      expect(page).to have_content('Welcome back Original Ethan')
       expect(page).to have_content("Original Ethan's Dashboard")
     end
 
@@ -49,6 +52,23 @@ RSpec.describe 'User login', type: :feature do
 
       expect(current_path).to eq(login_path)
       expect(page).to have_content('Invalid credentials')
+    end
+
+    it 'can log out a logged in user' do
+      visit login_path
+
+      within('#login-form') do
+        fill_in 'Email', with: 'ethan@turing.edu'
+        fill_in 'Password', with: 'test123'
+        click_button 'Log In'
+      end
+
+      click_link 'Home'
+      expect(page).to have_button('Log Out')
+
+      click_button 'Log Out'
+      expect(current_path).to eq(login_path)
+      expect(page).to have_content('Log In')
     end
   end
 end

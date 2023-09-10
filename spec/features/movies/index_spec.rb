@@ -3,10 +3,16 @@
 require 'rails_helper'
 
 RSpec.describe 'Movies Results/index page', :vcr, type: :feature do
+  include AuthenticationHelper
+
+  before do
+    @user = create(:user)
+    login_user(@user)
+    visit user_discover_path(@user)
+  end
+
   describe 'top 20 rated movies search' do
     it 'displays the top 20 rated movies' do
-      @user = create(:user)
-      visit user_discover_path(@user)
       click_button 'Find Top Rated Movies'
 
       expect(page).to have_link('The Godfather')
@@ -17,8 +23,6 @@ RSpec.describe 'Movies Results/index page', :vcr, type: :feature do
 
   describe 'keyword search movies' do
     it 'displays the keyword search results' do
-      @user = create(:user)
-      visit user_discover_path(@user)
       fill_in('keywords', with: 'Star Wars')
       click_button 'Find Movies'
 

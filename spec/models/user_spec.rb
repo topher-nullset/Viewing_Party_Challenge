@@ -25,7 +25,8 @@ RSpec.describe User, type: :model do
   end
 
   it 'users' do
-    user = User.create(name: 'Meg', email: 'meg@test.com', password: 'password123', password_confirmation: 'password123')
+    user = User.create(name: 'Meg', email: 'meg@test.com', password: 'password123',
+                       password_confirmation: 'password123')
     expect(user).to_not have_attribute(:password)
     expect(user.password_digest).to_not eq('password123')
   end

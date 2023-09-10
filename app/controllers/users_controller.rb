@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
+  before_action :require_login, only: [:show]
+
   def show
-    @user = User.find(params[:id])
+    @user = current_user
     @viewing_parties = @user.viewing_parties
   end
 
   def new; end
-  
+
   def create
     user = User.new(user_params)
     if user.save
@@ -24,7 +26,7 @@ class UsersController < ApplicationController
 
   def login
     user = User.find_by(email: params[:email])
-    if user && user.authenticate(params[:password])
+    if user&.authenticate(params[:password])
       session[:user_id] = user.id
       flash[:success] = "Welcome back #{user.name}"
       redirect_to user_path(user.id)
@@ -34,9 +36,21 @@ class UsersController < ApplicationController
     end
   end
 
+  def logout
+    session[:user_id] = nil
+    redirect_to login_path
+  end
+
   private
 
   def user_params
     params.permit(:name, :email, :password, :password_confirmation)
+  end
+
+  def require_login
+    return if current_user
+
+    flash[:error] = 'You must be logged in to access this page'
+    redirect_to root_path
   end
 end

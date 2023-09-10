@@ -3,8 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe 'The user dashboard' do
+  include AuthenticationHelper
+
   before do
     @user = create(:user)
+    login_user(@user)
     visit user_path(@user)
   end
 

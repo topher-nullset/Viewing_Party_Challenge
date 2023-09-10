@@ -38,9 +38,9 @@ RSpec.describe 'User Registration Page', type: :feature do
         fill_in('Confirm Password', with: 'test123')
         click_button('Create New User')
       end
-      
+
       user = User.last
-      
+
       # Flash message
       expect(page).to have_content('User successfully created')
       expect(current_path).to eq(user_path(user.id))
@@ -117,7 +117,8 @@ RSpec.describe 'User Registration Page', type: :feature do
     end
 
     it 'returns an error if an email is not unique' do
-      User.create(name: 'Original Ethan', email: 'ethan@turing.edu', password: 'test123', password_confirmation: 'test123')  
+      User.create(name: 'Original Ethan', email: 'ethan@turing.edu', password: 'test123',
+                  password_confirmation: 'test123')
 
       within('#registration-form') do
         fill_in('Name', with: 'Clone Ethan')
